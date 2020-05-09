@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4952704336235917417}
   - component: {fileID: 638048548715051975}
   - component: {fileID: 1340845904368312554}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -105,6 +105,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90ee44ba425d81442b674f0203007ef4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GCost: 0
+  HCost: 0
+  FCost: 0
+  previousNode: {fileID: 0}
+  neighborNodes: []
+  playerTr: {fileID: 0}
+  canYouPass: 0
 --- !u!1 &6876011692827234312
 GameObject:
   m_ObjectHideFlags: 0

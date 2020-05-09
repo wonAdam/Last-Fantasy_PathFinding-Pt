@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3552864118469482675}
   - component: {fileID: 3552864118469482672}
   - component: {fileID: 4829831551130171729}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -105,6 +105,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90ee44ba425d81442b674f0203007ef4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GCost: 0
+  HCost: 0
+  FCost: 0
+  previousNode: {fileID: 0}
+  neighborNodes: []
+  playerTr: {fileID: 0}
+  canYouPass: 1
 --- !u!1 &7923200433151997839
 GameObject:
   m_ObjectHideFlags: 0

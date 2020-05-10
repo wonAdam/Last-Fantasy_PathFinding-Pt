@@ -16,7 +16,10 @@ public class Map : MonoBehaviour
     [SerializeField] Material closedMat = null;
     [SerializeField] Material openMat = null;
     [SerializeField] Material noneMat = null;
+    [SerializeField] Material completedMat = null;
     [Range(1f, 100f)][SerializeField] float speed = 20f;
+    [SerializeField] Event pathCalculEvent;
+    public List<WorldBlock> completedPath;
 
 
     private void Start() {
@@ -41,6 +44,75 @@ public class Map : MonoBehaviour
 
         return null;
     }
+
+    IEnumerator pathFindingVisual(WorldBlock start, WorldBlock destination)
+    {
+            OpenList = new List<WorldBlock>();
+            ClosedList = new List<WorldBlock>();
+
+            OpenList.Add(start);
+
+            foreach(WorldBlock wb in AllBlocks)
+            {
+                wb.GCost = Mathf.Infinity;
+                wb.previousNode = null;
+            }
+
+            // setting start node
+            start.GCost = 0f;
+            start.HCost = CalculateDistanceCost(start, destination);
+            start.CalculateFValue();
+
+
+            //diggin down to end node
+            while(OpenList.Count > 0)
+            {
+                WorldBlock currentNode = GetLowestFCostNode(OpenList);
+
+                //reached the destination
+                if(currentNode == destination)
+                {
+                    completedPath =  CalculatePath(destination);
+                    pathCalculEvent.TriggerEvent();
+                    break;
+                }
+                
+
+                OpenList.Remove(currentNode);
+                ClosedList.Add(currentNode);
+
+                currentNode.GetComponent<MeshRenderer>().material = closedMat;
+                yield return new WaitForSeconds(1f/speed);
+
+                foreach(WorldBlock neighborNode in currentNode.neighborNodes)
+                {
+                    if(ClosedList.Contains(neighborNode)) continue;
+
+                    float tentativeGCost = currentNode.GCost + CalculateDistanceCost(currentNode, neighborNode);
+
+                    if(tentativeGCost < neighborNode.GCost)
+                    {
+                        neighborNode.previousNode = currentNode;
+                        neighborNode.GCost = tentativeGCost;
+                        neighborNode.HCost = CalculateDistanceCost(neighborNode, destination);
+                        neighborNode.CalculateFValue();
+
+
+                        if(!OpenList.Contains(neighborNode))
+                        {
+                            OpenList.Add(neighborNode);                
+                            neighborNode.GetComponent<MeshRenderer>().material = openMat;
+                            yield return new WaitForSeconds(1f/speed);
+                        }
+                    }
+
+
+                }
+            }
+
+            //Can't Find destination
+            yield return null;
+    }
     public List<WorldBlock> PathFinding(WorldBlock start, WorldBlock destination)
     {
         foreach(WorldBlock wb in AllBlocks)
@@ -51,6 +123,7 @@ public class Map : MonoBehaviour
 
         if(visualEffect)
         {
+            StartCoroutine(pathFindingVisual(start, destination));
             return null;
         }
         else{
@@ -115,12 +188,20 @@ public class Map : MonoBehaviour
     {
         List<WorldBlock> path = new List<WorldBlock>();
 
+        foreach(WorldBlock wb in AllBlocks)
+        {
+            wb.GetComponent<MeshRenderer>().material = noneMat;
+        }
+
         path.Add(destination);
         WorldBlock currentNode = destination;
+        currentNode.GetComponent<MeshRenderer>().material = completedMat;
+        
         while(currentNode.previousNode != null)
         {
             path.Add(currentNode.previousNode);
             currentNode = currentNode.previousNode;
+            currentNode.GetComponent<MeshRenderer>().material = completedMat;
         }
         path.Reverse();
         return path;

@@ -63,4 +63,9 @@ public class Player : MonoBehaviour
         Vector3 rawDir = dir * Time.deltaTime * speed;
         transform.Translate(dir, Space.World);
     }
+
+    public void GetPathFromMap()
+    {
+        path = map.completedPath;
+    }
 }
